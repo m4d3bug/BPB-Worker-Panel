@@ -30,7 +30,7 @@ jobs:
           cp dist/worker.js .
           npx javascript-obfuscator dist/worker.js --output _worker.js
 
-      - name: Commit and push built worker
+      - name: Commit and push built worker file
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"

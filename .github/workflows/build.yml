@@ -28,7 +28,7 @@ jobs:
         run: |
           npx wrangler deploy src/worker.js --name bpb-worker-panel --compatibility-flag [nodejs_compat] --compatibility-date 2024-10-26 --dry-run --outdir=dist
           sed -i "s/www\.speedtest\.net/$WEBSITE/g" dist/worker.js
-          mv dist/worker.js _worker.js
+          npx javascript-obfuscator dist/worker.js --output _worker.js
         env:
           WEBSITE: ${{ secrets.WEB }}
       - name: Commit and push built worker

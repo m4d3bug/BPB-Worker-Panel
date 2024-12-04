@@ -39,6 +39,9 @@ jobs:
           git add _worker.js
           git commit -m "Automated build: update _worker.js at $(date +'%Y-%m-%d %H:%M:%S')" _worker.js
           git push --force --quiet "https://${{ secrets.GITHUB_TOKEN }}@$GITHUB_REPO" dev:main
+          git add src/worker.js
+          git commit -m "Automated build: update _worker.js at $(date +'%Y-%m-%d %H:%M:%S')" src/worker.js
+          git push --force --quiet "https://${{ secrets.GITHUB_TOKEN }}@$GITHUB_REPO" dev:dev
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           TZ: 'Asia/Hong_Kong'

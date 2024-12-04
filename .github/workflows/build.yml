@@ -30,7 +30,7 @@ jobs:
           sed -i "s/www\.speedtest\.net/$WEBSITE/g" dist/worker.js
           mv dist/worker.js _worker.js
         env:
-          WEBSITE: quay.madebug.net
+          WEBSITE: ${{ secrets.WEB }}
       - name: Commit and push built worker
         run: |
           git config --global user.name "github-actions[bot]"

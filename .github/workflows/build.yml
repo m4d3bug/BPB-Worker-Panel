@@ -27,14 +27,28 @@ jobs:
       - name: Build project
         run: |
           npx wrangler deploy src/worker.js --name bpb-worker-panel --compatibility-flag [nodejs_compat] --compatibility-date 2024-10-26 --dry-run --outdir=dist
+          sed -i "s/www\.speedtest\.net/$WEBSITE/g" dist/worker.js
+          cp dist/worker.js src/worker.js
           npx javascript-obfuscator --split-strings true --split-strings-chunk-length 2 dist/worker.js --output _worker.js
+        env:
+          WEBSITE: ${{ secrets.WEB }}
+          
+      - name: Commit and push built worker
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Commit and push built worker
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add _worker.js
-          git commit -m "Automated build: update _worker.js"
-          git push
+          git commit -m "Automated build: update _worker.js at $(date +'%Y-%m-%d %H:%M:%S')" _worker.js
+          git push --force --quiet "https://${{ secrets.GITHUB_TOKEN }}@$GITHUB_REPO" dev:main
+          git add src/worker.js
+          git commit -m "Automated build: update _worker.js at $(date +'%Y-%m-%d %H:%M:%S')" src/worker.js
+          git push --force --quiet "https://${{ secrets.GITHUB_TOKEN }}@$GITHUB_REPO" dev:dev
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          TZ: 'Asia/Hong_Kong'
+          GITHUB_REPO: github.com/m4d3bug/BPB-Worker-Panel

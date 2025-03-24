@@ -29,6 +29,7 @@ jobs:
           npx wrangler deploy src/worker.js --name bpb-worker-panel --compatibility-flag [nodejs_compat] --compatibility-date 2025-01-18 --dry-run --minify --outdir=dist
           sed -i "s/www\.speedtest\.net/$WEBSITE/g" dist/worker.js
           cp dist/worker.js src/worker.js
+          cp dist/worker.js build/origion-worker.js
         env:
           WEBSITE: ${{ secrets.WEB }}
         

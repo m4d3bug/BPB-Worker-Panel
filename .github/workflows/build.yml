@@ -25,8 +25,13 @@ jobs:
         run: npm install
 
       - name: Build project
-        run: npx wrangler deploy src/worker.js --name bpb-worker-panel --compatibility-flag [nodejs_compat] --compatibility-date 2025-01-18 --dry-run --minify --outdir=dist
-          
+        run: | 
+          npx wrangler deploy src/worker.js --name bpb-worker-panel --compatibility-flag [nodejs_compat] --compatibility-date 2025-01-18 --dry-run --minify --outdir=dist
+          sed -i "s/www\.speedtest\.net/$WEBSITE/g" dist/worker.js
+          cp dist/worker.js src/worker.js
+        env:
+          WEBSITE: ${{ secrets.WEB }}
+        
       - name: Minify JS
         run: npx terser dist/worker.js --output dist/_worker.js --comments false
       
@@ -41,6 +46,11 @@ jobs:
           npx javascript-obfuscator --config ./obfs-config.json dist/_worker.js --output _worker.js
           cp -f _worker.js build/worker.js
           zip -j build/worker.zip _worker.js
+
+      - name: Commit and push built worker
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Commit and push built worker
         run: |

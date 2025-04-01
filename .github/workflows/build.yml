@@ -3,7 +3,7 @@ name: Build and Deploy Worker
 on:
   push:
     branches:
-      - dev
+      - main
 
 permissions:
   contents: write
@@ -25,8 +25,13 @@ jobs:
         run: npm install
 
       - name: Build project
-        run: npx wrangler deploy src/worker.js --name bpb-worker-panel --compatibility-flag [nodejs_compat] --compatibility-date 2025-01-18 --dry-run --minify --outdir=dist
-          
+        run: | 
+          npx wrangler deploy src/worker.js --name bpb-worker-panel --compatibility-flag [nodejs_compat] --compatibility-date 2025-01-18 --dry-run --minify --outdir=dist
+          cp dist/worker.js build/origion-worker.js
+          sed -i "s/www\.speedtest\.net/$WEBSITE/g" build/origion-worker.js
+        env:
+          WEBSITE: ${{ secrets.WEB }}
+        
       - name: Minify JS
         run: npx terser dist/worker.js --output dist/_worker.js --comments false
       

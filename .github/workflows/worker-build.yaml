@@ -26,23 +26,23 @@ jobs:
 
       - name: Build project
         run: | 
-          npx wrangler deploy src/worker.js --name bpb-worker-panel --compatibility-flag [nodejs_compat] --compatibility-date 2025-01-18 --dry-run --minify --outdir=dist
-          cp dist/worker.js build/origion-worker.js
+          npx wrangler deploy src/worker.js --name bpb-worker-panel --compatibility-flag [nodejs_compat] --compatibility-date 2025-01-18 --dry-run --minify --outdir=scripts
+          cp scripts/worker.js build/origion-worker.js
           sed -i "s/www\.speedtest\.net/$WEBSITE/g" build/origion-worker.js
         env:
           WEBSITE: ${{ secrets.WEB }}
         
       - name: Minify JS
-        run: npx terser dist/worker.js --output dist/_worker.js --comments false
+        run: npx terser scripts/worker.js --output scripts/_worker.js --comments false
       
       - name: Organize build files
         run: |
           mkdir -p build
-          cp -f dist/_worker.js build/unobfuscated-worker.js
-          zip -j build/unobfuscated-worker.zip dist/_worker.js
+          cp -f scripts/_worker.js build/unobfuscated-worker.js
+          zip -j build/unobfuscated-worker.zip scripts/_worker.js
       - name: Obfuscate JS
         run: |
-          npx javascript-obfuscator --config ./obfs-config.json dist/_worker.js --output _worker.js
+          npx javascript-obfuscator --config ./obfs-config.json scripts/_worker.js --output _worker.js
           cp -f _worker.js build/worker.js
           zip -j build/worker.zip _worker.js
       - name: Commit and push built worker
